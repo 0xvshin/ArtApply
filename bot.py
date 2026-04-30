@@ -14,8 +14,10 @@ ADMIN_ID = 7720697188
     F_UNIVERSITY, F_STATUS, F_GRAD_YEAR, F_REMAINING, F_GPA,
     F_TARGET_DEGREE, F_TARGET_FIELD, F_COUNTRIES, F_PAPERS,
     F_EXHIBITIONS, F_LANG_STATUS, F_LANG_SCORE, F_APPLY_KNOW,
-    F_PORTFOLIO_LEVEL, F_OTHER, F_FILES, F_CONFIRM
-) = range(23)
+    F_PORTFOLIO_LEVEL, F_OTHER, F_FILES
+) = range(22)
+
+TOTAL_STEPS = 21
 
 # ==================== منوها ====================
 
@@ -32,6 +34,9 @@ packages_menu = ReplyKeyboardMarkup([
 ], resize_keyboard=True)
 
 cancel_menu = ReplyKeyboardMarkup([["❌ انصراف از فرم"]], resize_keyboard=True)
+
+def step(n):
+    return f"[ مرحله {n} از {TOTAL_STEPS} ]"
 
 # ==================== سوالات متداول ====================
 
@@ -190,13 +195,12 @@ async def form_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
     context.user_data['files'] = []
     await update.message.reply_text(
-        "📋 *فرم ارزیابی رایگان آرت اپلای*\n\n"
+        "📋 فرم ارزیابی رایگان آرت اپلای\n\n"
         "لطفاً به سوالات زیر پاسخ دهید.\n"
         "در هر مرحله می‌توانید ❌ انصراف از فرم را بزنید.\n\n"
         "━━━━━━━━━━━━━━━\n"
-        "1️⃣ نام و نام خانوادگی:",
-        reply_markup=cancel_menu,
-        parse_mode="Markdown"
+        f"{step(1)} نام و نام خانوادگی:",
+        reply_markup=cancel_menu
     )
     return F_NAME
 
@@ -204,42 +208,42 @@ async def f_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "❌ انصراف از فرم":
         return await form_cancel(update, context)
     context.user_data['name'] = update.message.text
-    await update.message.reply_text("2️⃣ آیدی یا شماره تلگرام:")
+    await update.message.reply_text(f"{step(2)} آیدی یا شماره تلگرام:")
     return F_TELEGRAM
 
 async def f_telegram(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "❌ انصراف از فرم":
         return await form_cancel(update, context)
     context.user_data['telegram'] = update.message.text
-    await update.message.reply_text("3️⃣ ایمیل:")
+    await update.message.reply_text(f"{step(3)} ایمیل:")
     return F_EMAIL
 
 async def f_email(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "❌ انصراف از فرم":
         return await form_cancel(update, context)
     context.user_data['email'] = update.message.text
-    await update.message.reply_text("4️⃣ سال تولد:")
+    await update.message.reply_text(f"{step(4)} سال تولد:")
     return F_BIRTH
 
 async def f_birth(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "❌ انصراف از فرم":
         return await form_cancel(update, context)
     context.user_data['birth'] = update.message.text
-    await update.message.reply_text("5️⃣ آخرین مقطع تحصیلی:\n(مثال: کارشناسی، کارشناسی ارشد، دکتری)")
+    await update.message.reply_text(f"{step(5)} آخرین مقطع تحصیلی:\n(مثال: کارشناسی، کارشناسی ارشد، دکتری)")
     return F_DEGREE
 
 async def f_degree(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "❌ انصراف از فرم":
         return await form_cancel(update, context)
     context.user_data['degree'] = update.message.text
-    await update.message.reply_text("6️⃣ رشته تحصیلی:")
+    await update.message.reply_text(f"{step(6)} رشته تحصیلی:")
     return F_FIELD
 
 async def f_field(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "❌ انصراف از فرم":
         return await form_cancel(update, context)
     context.user_data['field'] = update.message.text
-    await update.message.reply_text("7️⃣ دانشگاه محل تحصیل:")
+    await update.message.reply_text(f"{step(7)} دانشگاه محل تحصیل:")
     return F_UNIVERSITY
 
 async def f_university(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -250,7 +254,7 @@ async def f_university(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [["در حال تحصیل", "فارغ التحصیل"], ["❌ انصراف از فرم"]],
         resize_keyboard=True
     )
-    await update.message.reply_text("8️⃣ وضعیت تحصیلی:", reply_markup=keyboard)
+    await update.message.reply_text(f"{step(8)} وضعیت تحصیلی:", reply_markup=keyboard)
     return F_STATUS
 
 async def f_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -258,11 +262,11 @@ async def f_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return await form_cancel(update, context)
     context.user_data['status'] = update.message.text
     if update.message.text == "فارغ التحصیل":
-        await update.message.reply_text("9️⃣ سال اتمام تحصیل:", reply_markup=cancel_menu)
+        await update.message.reply_text(f"{step(9)} سال اتمام تحصیل:", reply_markup=cancel_menu)
         return F_GRAD_YEAR
     else:
         context.user_data['grad_year'] = "-"
-        await update.message.reply_text("9️⃣ چند ترم تا پایان تحصیل باقی مانده؟", reply_markup=cancel_menu)
+        await update.message.reply_text(f"{step(9)} چند ترم تا پایان تحصیل باقی مانده؟", reply_markup=cancel_menu)
         return F_REMAINING
 
 async def f_grad_year(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -270,14 +274,14 @@ async def f_grad_year(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return await form_cancel(update, context)
     context.user_data['grad_year'] = update.message.text
     context.user_data['remaining'] = "-"
-    await update.message.reply_text("🔟 معدل آخرین مقطع تحصیلی:")
+    await update.message.reply_text(f"{step(10)} معدل آخرین مقطع تحصیلی:")
     return F_GPA
 
 async def f_remaining(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "❌ انصراف از فرم":
         return await form_cancel(update, context)
     context.user_data['remaining'] = update.message.text
-    await update.message.reply_text("🔟 معدل آخرین مقطع تحصیلی:")
+    await update.message.reply_text(f"{step(10)} معدل آخرین مقطع تحصیلی:")
     return F_GPA
 
 async def f_gpa(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -288,35 +292,35 @@ async def f_gpa(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [["کارشناسی", "کارشناسی ارشد", "دکتری"], ["❌ انصراف از فرم"]],
         resize_keyboard=True
     )
-    await update.message.reply_text("1️⃣1️⃣ مقطع مدنظر برای اپلای:", reply_markup=keyboard)
+    await update.message.reply_text(f"{step(11)} مقطع مدنظر برای اپلای:", reply_markup=keyboard)
     return F_TARGET_DEGREE
 
 async def f_target_degree(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "❌ انصراف از فرم":
         return await form_cancel(update, context)
     context.user_data['target_degree'] = update.message.text
-    await update.message.reply_text("1️⃣2️⃣ رشته مدنظر برای اپلای:", reply_markup=cancel_menu)
+    await update.message.reply_text(f"{step(12)} رشته مدنظر برای اپلای:", reply_markup=cancel_menu)
     return F_TARGET_FIELD
 
 async def f_target_field(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "❌ انصراف از فرم":
         return await form_cancel(update, context)
     context.user_data['target_field'] = update.message.text
-    await update.message.reply_text("1️⃣3️⃣ کشور یا کشورهای مدنظر:")
+    await update.message.reply_text(f"{step(13)} کشور یا کشورهای مدنظر:")
     return F_COUNTRIES
 
 async def f_countries(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "❌ انصراف از فرم":
         return await form_cancel(update, context)
     context.user_data['countries'] = update.message.text
-    await update.message.reply_text("1️⃣4️⃣ تعداد مقالات منتشر شده:\n(اگر ندارید عدد 0 بنویسید)")
+    await update.message.reply_text(f"{step(14)} تعداد مقالات منتشر شده:\n(اگر ندارید عدد 0 بنویسید)")
     return F_PAPERS
 
 async def f_papers(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "❌ انصراف از فرم":
         return await form_cancel(update, context)
     context.user_data['papers'] = update.message.text
-    await update.message.reply_text("1️⃣5️⃣ تعداد نمایشگاه‌ها:\n(اگر ندارید عدد 0 بنویسید)")
+    await update.message.reply_text(f"{step(15)} تعداد نمایشگاه‌ها:\n(اگر ندارید عدد 0 بنویسید)")
     return F_EXHIBITIONS
 
 async def f_exhibitions(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -327,7 +331,7 @@ async def f_exhibitions(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [["دارم", "ندارم"], ["❌ انصراف از فرم"]],
         resize_keyboard=True
     )
-    await update.message.reply_text("1️⃣6️⃣ مدرک زبان:", reply_markup=keyboard)
+    await update.message.reply_text(f"{step(16)} مدرک زبان:", reply_markup=keyboard)
     return F_LANG_STATUS
 
 async def f_lang_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -335,16 +339,16 @@ async def f_lang_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return await form_cancel(update, context)
     context.user_data['lang_status'] = update.message.text
     if update.message.text == "دارم":
-        await update.message.reply_text("1️⃣7️⃣ نمره یا سطح زبان:", reply_markup=cancel_menu)
+        await update.message.reply_text(f"{step(17)} نمره یا سطح زبان:", reply_markup=cancel_menu)
+        return F_LANG_SCORE
     else:
         context.user_data['lang_score'] = "-"
         keyboard = ReplyKeyboardMarkup(
             [["هیچ", "تا حدودی", "خیلی"], ["❌ انصراف از فرم"]],
             resize_keyboard=True
         )
-        await update.message.reply_text("1️⃣8️⃣ آشنایی با پروسه اپلای:", reply_markup=keyboard)
+        await update.message.reply_text(f"{step(18)} آشنایی با پروسه اپلای:", reply_markup=keyboard)
         return F_APPLY_KNOW
-    return F_LANG_SCORE
 
 async def f_lang_score(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "❌ انصراف از فرم":
@@ -354,7 +358,7 @@ async def f_lang_score(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [["هیچ", "تا حدودی", "خیلی"], ["❌ انصراف از فرم"]],
         resize_keyboard=True
     )
-    await update.message.reply_text("1️⃣8️⃣ آشنایی با پروسه اپلای:", reply_markup=keyboard)
+    await update.message.reply_text(f"{step(18)} آشنایی با پروسه اپلای:", reply_markup=keyboard)
     return F_APPLY_KNOW
 
 async def f_apply_know(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -365,7 +369,7 @@ async def f_apply_know(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [["معمولی", "خوب", "مورد تایید اساتید"], ["❌ انصراف از فرم"]],
         resize_keyboard=True
     )
-    await update.message.reply_text("1️⃣9️⃣ سطح نمونه آثار:", reply_markup=keyboard)
+    await update.message.reply_text(f"{step(19)} سطح نمونه آثار:", reply_markup=keyboard)
     return F_PORTFOLIO_LEVEL
 
 async def f_portfolio_level(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -373,7 +377,7 @@ async def f_portfolio_level(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return await form_cancel(update, context)
     context.user_data['portfolio_level'] = update.message.text
     await update.message.reply_text(
-        "2️⃣0️⃣ سایر اطلاعات:\n(هر چیز دیگری که فکر می‌کنید مفید است بنویسید، یا بنویسید ندارم)",
+        f"{step(20)} سایر اطلاعات:\n(هر چیز دیگری که فکر می‌کنید مفید است، یا بنویسید ندارم)",
         reply_markup=cancel_menu
     )
     return F_OTHER
@@ -387,12 +391,11 @@ async def f_other(update: Update, context: ContextTypes.DEFAULT_TYPE):
         resize_keyboard=True
     )
     await update.message.reply_text(
-        "2️⃣1️⃣ *ارسال فایل (اختیاری)*\n\n"
-        "اگر رزومه، پورتفولیو یا هر فایل دیگری دارید همین الان ارسال کنید.\n"
+        f"{step(21)} ارسال فایل (اختیاری)\n\n"
+        "اگر رزومه، پورتفولیو یا هر فایلی دارید همین الان ارسال کنید.\n"
         "می‌توانید چند فایل ارسال کنید.\n\n"
-        "وقتی تمام شد روی *رد کردن و ارسال فرم* کلیک کنید.",
-        reply_markup=keyboard,
-        parse_mode="Markdown"
+        "وقتی تمام شد روی دکمه زیر کلیک کنید:",
+        reply_markup=keyboard
     )
     return F_FILES
 
@@ -401,9 +404,8 @@ async def f_files(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return await form_cancel(update, context)
 
     if update.message.text == "رد کردن و ارسال فرم ✅":
-        return await f_confirm(update, context)
+        return await send_form(update, context)
 
-    # ذخیره فایل
     file_id = None
     file_type = None
     if update.message.document:
@@ -416,71 +418,69 @@ async def f_files(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if file_id:
         context.user_data['files'].append({'id': file_id, 'type': file_type})
         await update.message.reply_text(
-            f"✅ فایل دریافت شد! ({len(context.user_data['files'])} فایل)\nفایل دیگری ارسال کنید یا روی دکمه کلیک کنید."
+            f"✅ فایل دریافت شد! ({len(context.user_data['files'])} فایل)\n"
+            "فایل دیگری ارسال کنید یا روی دکمه کلیک کنید."
         )
     return F_FILES
 
-async def f_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def send_form(update: Update, context: ContextTypes.DEFAULT_TYPE):
     d = context.user_data
     user = update.effective_user
 
     summary = (
-        f"📋 *فرم ارزیابی جدید*\n"
-        f"━━━━━━━━━━━━━━━\n"
-        f"👤 *نام:* {d.get('name', '-')}\n"
-        f"📱 *تلگرام:* {d.get('telegram', '-')}\n"
-        f"📧 *ایمیل:* {d.get('email', '-')}\n"
-        f"🎂 *سال تولد:* {d.get('birth', '-')}\n"
-        f"━━━━━━━━━━━━━━━\n"
-        f"🎓 *آخرین مقطع:* {d.get('degree', '-')}\n"
-        f"📚 *رشته:* {d.get('field', '-')}\n"
-        f"🏫 *دانشگاه:* {d.get('university', '-')}\n"
-        f"📊 *وضعیت:* {d.get('status', '-')}\n"
-        f"📅 *سال اتمام:* {d.get('grad_year', '-')}\n"
-        f"⏳ *ترم‌های باقیمانده:* {d.get('remaining', '-')}\n"
-        f"📈 *معدل:* {d.get('gpa', '-')}\n"
-        f"━━━━━━━━━━━━━━━\n"
-        f"🎯 *مقطع مدنظر:* {d.get('target_degree', '-')}\n"
-        f"🖌 *رشته مدنظر:* {d.get('target_field', '-')}\n"
-        f"🌍 *کشورهای مدنظر:* {d.get('countries', '-')}\n"
-        f"━━━━━━━━━━━━━━━\n"
-        f"📄 *مقالات:* {d.get('papers', '-')}\n"
-        f"🖼 *نمایشگاه‌ها:* {d.get('exhibitions', '-')}\n"
-        f"🗣 *مدرک زبان:* {d.get('lang_status', '-')}\n"
-        f"📝 *نمره زبان:* {d.get('lang_score', '-')}\n"
-        f"━━━━━━━━━━━━━━━\n"
-        f"🧠 *آشنایی با اپلای:* {d.get('apply_know', '-')}\n"
-        f"🎨 *سطح نمونه آثار:* {d.get('portfolio_level', '-')}\n"
-        f"💬 *سایر اطلاعات:* {d.get('other', '-')}\n"
-        f"━━━━━━━━━━━━━━━\n"
-        f"📎 *تعداد فایل‌های ارسالی:* {len(d.get('files', []))}\n"
-        f"🔗 *یوزرنیم تلگرام:* @{user.username if user.username else 'ندارد'}"
+        "📋 فرم ارزیابی جدید - آرت اپلای\n"
+        "━━━━━━━━━━━━━━━\n"
+        f"نام: {d.get('name', '-')}\n"
+        f"تلگرام: {d.get('telegram', '-')}\n"
+        f"ایمیل: {d.get('email', '-')}\n"
+        f"سال تولد: {d.get('birth', '-')}\n"
+        "━━━━━━━━━━━━━━━\n"
+        f"آخرین مقطع: {d.get('degree', '-')}\n"
+        f"رشته: {d.get('field', '-')}\n"
+        f"دانشگاه: {d.get('university', '-')}\n"
+        f"وضعیت: {d.get('status', '-')}\n"
+        f"سال اتمام: {d.get('grad_year', '-')}\n"
+        f"ترم‌های باقیمانده: {d.get('remaining', '-')}\n"
+        f"معدل: {d.get('gpa', '-')}\n"
+        "━━━━━━━━━━━━━━━\n"
+        f"مقطع مدنظر: {d.get('target_degree', '-')}\n"
+        f"رشته مدنظر: {d.get('target_field', '-')}\n"
+        f"کشورهای مدنظر: {d.get('countries', '-')}\n"
+        "━━━━━━━━━━━━━━━\n"
+        f"مقالات: {d.get('papers', '-')}\n"
+        f"نمایشگاه‌ها: {d.get('exhibitions', '-')}\n"
+        f"مدرک زبان: {d.get('lang_status', '-')}\n"
+        f"نمره زبان: {d.get('lang_score', '-')}\n"
+        "━━━━━━━━━━━━━━━\n"
+        f"آشنایی با اپلای: {d.get('apply_know', '-')}\n"
+        f"سطح نمونه آثار: {d.get('portfolio_level', '-')}\n"
+        f"سایر اطلاعات: {d.get('other', '-')}\n"
+        "━━━━━━━━━━━━━━━\n"
+        f"تعداد فایل‌های ارسالی: {len(d.get('files', []))}\n"
+        f"یوزرنیم تلگرام: @{user.username if user.username else 'ندارد'}\n"
+        f"Chat ID: {user.id}"
     )
 
-    # ارسال فرم به ادمین
-    await context.bot.send_message(
-        chat_id=ADMIN_ID,
-        text=summary,
-        parse_mode="Markdown"
-    )
-
-    # ارسال فایل‌ها به ادمین
-    for f in d.get('files', []):
-        try:
+    try:
+        await context.bot.send_message(chat_id=ADMIN_ID, text=summary)
+        for f in d.get('files', []):
             if f['type'] == "document":
                 await context.bot.send_document(chat_id=ADMIN_ID, document=f['id'])
             elif f['type'] == "photo":
                 await context.bot.send_photo(chat_id=ADMIN_ID, photo=f['id'])
-        except Exception:
-            pass
 
-    await update.message.reply_text(
-        "✅ *فرم شما با موفقیت ارسال شد!*\n\n"
-        "کارشناسان آرت اپلای به زودی با شما تماس خواهند گرفت.\n\n"
-        "👤 برای پیگیری: @ArtApplyContact",
-        reply_markup=main_menu,
-        parse_mode="Markdown"
-    )
+        await update.message.reply_text(
+            "✅ فرم شما با موفقیت ارسال شد!\n\n"
+            "کارشناسان آرت اپلای به زودی با شما تماس خواهند گرفت.\n\n"
+            "برای پیگیری: @ArtApplyContact",
+            reply_markup=main_menu
+        )
+    except Exception as e:
+        await update.message.reply_text(
+            f"⚠️ خطا در ارسال فرم. لطفاً دوباره تلاش کنید.\nخطا: {str(e)}",
+            reply_markup=main_menu
+        )
+
     context.user_data.clear()
     return ConversationHandler.END
 
@@ -510,72 +510,49 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if text == "📦 بسته‌های اپلای":
         await update.message.reply_text("لطفاً بسته مورد نظر خود را انتخاب کنید:", reply_markup=packages_menu)
-
     elif text == "🎓 بسته کارشناسی":
         await update.message.reply_text(
-            "🎓 *بسته کارشناسی*\n\nبرای تحصیل در مقطع کارشناسی، تیم آرت اپلای به صورت تخصصی و با ارائه‌ی مشاوره‌ی دقیق، بهترین مقصد را برای شما پیشنهاد و تمامی امور اپلای را انجام می‌دهد.\n\nدر صورتی که سوال بیشتری دارید، می‌توانید از پشتیبان آرت اپلای بپرسید.",
-            parse_mode="Markdown"
+            "🎓 بسته کارشناسی\n\nبرای تحصیل در مقطع کارشناسی، تیم آرت اپلای به صورت تخصصی و با ارائه مشاوره دقیق، بهترین مقصد را برای شما پیشنهاد و تمامی امور اپلای را انجام می‌دهد."
         )
         await update.message.reply_text("❓ سوالات متداول:", reply_markup=faq_karshenas_keyboard())
-
     elif text == "🎓 بسته کارشناسی ارشد":
         await update.message.reply_text(
-            "🎓 *بسته کارشناسی ارشد*\n\nبرای تحصیل در مقطع کارشناسی‌ارشد، تیم آرت اپلای به صورت تخصصی و با ارائه‌ی مشاوره‌ی دقیق، بهترین مقصد را برای شما پیشنهاد و تمامی امور اپلای را انجام می‌دهد.\n\nدر صورتی که سوال بیشتری دارید، می‌توانید از پشتیبان آرت اپلای بپرسید.",
-            parse_mode="Markdown"
+            "🎓 بسته کارشناسی ارشد\n\nبرای تحصیل در مقطع کارشناسی‌ارشد، تیم آرت اپلای به صورت تخصصی و با ارائه مشاوره دقیق، بهترین مقصد را برای شما پیشنهاد و تمامی امور اپلای را انجام می‌دهد."
         )
         await update.message.reply_text("❓ سوالات متداول:", reply_markup=faq_arshad_keyboard())
-
     elif text == "🎓 بسته دکتری":
         await update.message.reply_text(
-            "🎓 *بسته دکتری*\n\nبرای تحصیل در مقطع دکتری، تیم آرت اپلای به صورت تخصصی و با ارائه‌ی مشاوره‌ی دقیق، بهترین مقصد را برای شما پیشنهاد و تمامی امور اپلای را انجام می‌دهد.\n\nدر صورتی که سوال بیشتری دارید، می‌توانید از پشتیبان آرت اپلای بپرسید.",
-            parse_mode="Markdown"
+            "🎓 بسته دکتری\n\nبرای تحصیل در مقطع دکتری، تیم آرت اپلای به صورت تخصصی و با ارائه مشاوره دقیق، بهترین مقصد را برای شما پیشنهاد و تمامی امور اپلای را انجام می‌دهد."
         )
         await update.message.reply_text("❓ سوالات متداول:", reply_markup=faq_doktori_keyboard())
-
     elif text == "🧑‍🏫 بسته منتورینگ":
         await update.message.reply_text(
-            "🧑‍🏫 *بسته منتورینگ*\n\nمنتورینگ یکی از پر طرفدارترین خدمات آرت اپلای است که طی چهار سال گذشته، بیش از 200 اپلیکنت از این خدمت استفاده کرده و مستقیماً با موسس و مدیر آرت اپلای در ارتباط بودند.\n\nبیش از 90 درصد از این افراد موفق به اخذ پذیرش و بورسیه تحصیلی از بهترین دانشگاه‌های دنیا شدند.",
-            parse_mode="Markdown"
+            "🧑‍🏫 بسته منتورینگ\n\nمنتورینگ یکی از پر طرفدارترین خدمات آرت اپلای است که طی چهار سال گذشته، بیش از 200 اپلیکنت از این خدمت استفاده کرده‌اند.\n\nبیش از 90 درصد از این افراد موفق به اخذ پذیرش و بورسیه تحصیلی از بهترین دانشگاه‌های دنیا شدند."
         )
         await update.message.reply_text("❓ سوالات متداول:", reply_markup=faq_mentoring_keyboard())
-
     elif text == "📋 تهیه مدارک اپلای":
         await update.message.reply_text(
-            "📋 *تهیه مدارک اپلای*\n\n"
-            "📝 نگارش و ویرایش متن اولیه ایمیل: 30 یورو\n"
-            "📝 انگیزه‌نامه: 70 یورو\n"
-            "📝 متن توصیه‌نامه: 20 یورو\n"
-            "📝 سی‌وی: 50 یورو\n"
-            "🎨 طراحی پورتفولیو: 150 یورو\n"
-            "📄 پروپزال: بسته به موضوع بین 200 تا 500 یورو\n"
-            "🌐 طراحی وبسایت: شروع قیمت از 200 یورو\n\n"
-            "برای ثبت سفارش می‌توانید به پشتیبان آرت اپلای پیام دهید.",
-            parse_mode="Markdown"
+            "📋 تهیه مدارک اپلای\n\n"
+            "نگارش ایمیل: 30 یورو\n"
+            "انگیزه‌نامه: 70 یورو\n"
+            "توصیه‌نامه: 20 یورو\n"
+            "سی‌وی: 50 یورو\n"
+            "طراحی پورتفولیو: 150 یورو\n"
+            "پروپزال: 200 تا 500 یورو\n"
+            "طراحی وبسایت: از 200 یورو"
         )
         await update.message.reply_text("❓ سوالات متداول:", reply_markup=faq_madarek_keyboard())
-
     elif text == "🧳 مشاوره اپلای":
         await update.message.reply_text(
-            "🧳 *مشاوره اپلای*\n\nجهت رزرو وقت مشاوره تحصیلی:\n🔗 Apply.planovin.com",
-            parse_mode="Markdown"
+            "🧳 مشاوره اپلای\n\nجهت رزرو وقت مشاوره:\n🔗 Apply.planovin.com"
         )
         await update.message.reply_text("❓ سوالات متداول:", reply_markup=faq_consulting_keyboard())
-
     elif text == "📞 ارتباط با پشتیبانی":
-        await update.message.reply_text(
-            "📞 *ارتباط با پشتیبانی*\n\n👤 @ArtApplyContact",
-            parse_mode="Markdown"
-        )
-
+        await update.message.reply_text("📞 ارتباط با پشتیبانی\n\n👤 @ArtApplyContact")
     elif text == "🏆 پرونده‌های موفق":
-        await update.message.reply_text(
-            "🏆 *پرونده‌های موفق*\n\n👉 @ArtApplyStories",
-            parse_mode="Markdown"
-        )
-
+        await update.message.reply_text("🏆 پرونده‌های موفق\n\n👉 @ArtApplyStories")
     elif text == "↩️ بازگشت به منوی اصلی":
         await update.message.reply_text("👇 از منوی زیر سرویس مورد نظر را انتخاب کنید:", reply_markup=main_menu)
-
     else:
         await update.message.reply_text("لطفاً از منوی زیر انتخاب کنید 👇", reply_markup=main_menu)
 
@@ -597,15 +574,12 @@ async def handle_faq(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     prefix = "md" if data.startswith("md_") else data.split("_")[0]
-
     back_button = InlineKeyboardMarkup([
         [InlineKeyboardButton("↩️ بازگشت به سوالات", callback_data=f"back_{prefix}")]
     ])
-
     await query.message.reply_text(
-        f"❓ *{question}*\n\n{answer}",
-        reply_markup=back_button,
-        parse_mode="Markdown"
+        f"❓ {question}\n\n{answer}",
+        reply_markup=back_button
     )
 
 # ==================== اجرا ====================
@@ -613,7 +587,6 @@ async def handle_faq(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     app = Application.builder().token(TOKEN).build()
 
-    # ConversationHandler برای فرم ارزیابی
     form_handler = ConversationHandler(
         entry_points=[MessageHandler(filters.Regex("^✅ ارزیابی رایگان$"), form_start)],
         states={
