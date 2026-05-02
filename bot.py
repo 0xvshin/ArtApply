@@ -544,7 +544,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❓ سوالات متداول:", reply_markup=faq_madarek_keyboard())
     elif text == "🧳 مشاوره اپلای":
         await update.message.reply_text(
-            "🧳 مشاوره اپلای\n\nجهت رزرو وقت مشاوره:\n🔗 Apply.planovin.com"
+            "🧳 مشاوره اپلای\n\nجهت رزرو وقت مشاوره:\n🔗 @ArtApplyContact"
         )
         await update.message.reply_text("❓ سوالات متداول:", reply_markup=faq_consulting_keyboard())
     elif text == "📞 ارتباط با پشتیبانی":
