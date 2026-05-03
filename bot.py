@@ -450,7 +450,7 @@ async def send_form(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"مقالات: {d.get('papers', '-')}\n"
         f"نمایشگاه‌ها: {d.get('exhibitions', '-')}\n"
         f"مدرک زبان: {d.get('lang_status', '-')}\n"
-        f"نمره زبان: {d.get('lang_score', '-')}\n"
+        f"نمره یا سطح زبان: {d.get('lang_score', '-')}\n"
         "━━━━━━━━━━━━━━━\n"
         f"آشنایی با اپلای: {d.get('apply_know', '-')}\n"
         f"سطح نمونه آثار: {d.get('portfolio_level', '-')}\n"
