@@ -468,7 +468,7 @@ async def send_form(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await context.bot.send_document(chat_id=ADMIN_ID, document=f['id'])
             elif f['type'] == "photo":
                 await context.bot.send_photo(chat_id=ADMIN_ID, photo=f['id'])
-
+context.bot_data['form_count'] = context.bot_data.get('form_count', 0) + 1
         await update.message.reply_text(
             "✅ فرم شما با موفقیت ارسال شد!\n\n"
             "کارشناسان آرت اپلای به زودی با شما تماس خواهند گرفت.\n\n"
@@ -496,6 +496,7 @@ async def form_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = update.effective_user.first_name
+    context.bot_data['user_count'] = context.bot_data.get('user_count', 0) + 1
     await update.message.reply_text(
         f"👋 {name} عزیز، به سرویس خدمات آرت اپلای خوش آمدید!\n\n"
         "👇 از منوی زیر سرویس مورد نظر را انتخاب کنید:",
@@ -583,7 +584,16 @@ async def handle_faq(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # ==================== اجرا ====================
-
+async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+    user_count = context.bot_data.get('user_count', 0)
+    form_count = context.bot_data.get('form_count', 0)
+    await update.message.reply_text(
+        f"📊 آمار ربات\n\n"
+        f"👤 تعداد کاربران: {user_count}\n"
+        f"📋 تعداد فرم‌های ارسال شده: {form_count}"
+    )
 def main():
     app = Application.builder().token(TOKEN).build()
 
@@ -621,6 +631,7 @@ def main():
     )
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("stats", stats))
     app.add_handler(CommandHandler("services", services_command))
     app.add_handler(form_handler)
     app.add_handler(CallbackQueryHandler(handle_faq))
