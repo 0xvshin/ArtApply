@@ -468,7 +468,7 @@ async def send_form(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await context.bot.send_document(chat_id=ADMIN_ID, document=f['id'])
             elif f['type'] == "photo":
                 await context.bot.send_photo(chat_id=ADMIN_ID, photo=f['id'])
-context.bot_data['form_count'] = context.bot_data.get('form_count', 0) + 1
+        context.bot_data['form_count'] = context.bot_data.get('form_count', 0) + 1
         await update.message.reply_text(
             "✅ فرم شما با موفقیت ارسال شد!\n\n"
             "کارشناسان آرت اپلای به زودی با شما تماس خواهند گرفت.\n\n"
