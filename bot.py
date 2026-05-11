@@ -1,4 +1,5 @@
 import os
+import json
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import (
     Application, CommandHandler, MessageHandler, filters,
@@ -7,6 +8,20 @@ from telegram.ext import (
 
 TOKEN = os.environ.get("TOKEN")
 ADMIN_ID = 7720697188
+
+def load_users():
+    try:
+        with open('users.json', 'r') as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_user(user_id):
+    users = load_users()
+    if user_id not in users:
+        users.append(user_id)
+        with open('users.json', 'w') as f:
+            json.dump(users, f)
 
 # ==================== مراحل فرم ====================
 (
@@ -497,6 +512,7 @@ async def form_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = update.effective_user.first_name
     context.bot_data['user_count'] = context.bot_data.get('user_count', 0) + 1
+    save_user(update.effective_user.id)
     await update.message.reply_text(
         f"👋 {name} عزیز، به سرویس خدمات آرت اپلای خوش آمدید!\n\n"
         "👇 از منوی زیر سرویس مورد نظر را انتخاب کنید:",
@@ -505,6 +521,37 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def services_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("👇 خدمات آرت اپلای را انتخاب کنید:", reply_markup=main_menu)
+
+async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+    user_count = context.bot_data.get('user_count', 0)
+    form_count = context.bot_data.get('form_count', 0)
+    users = load_users()
+    await update.message.reply_text(
+        f"آمار ربات 📊\n\n"
+        f"کاربران استارت زده: {user_count} 👤\n"
+        f"کاربران ذخیره شده: {len(users)} 💾\n"
+        f"فرم‌های ارسال شده: {form_count} 📋"
+    )
+
+async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return
+    if not context.args:
+        await update.message.reply_text("متن پیام رو بعد از دستور بنویس.\nمثال: /broadcast سلام به همه!")
+        return
+    text = " ".join(context.args)
+    users = load_users()
+    success = 0
+    fail = 0
+    for user_id in users:
+        try:
+            await context.bot.send_message(chat_id=user_id, text=text)
+            success += 1
+        except:
+            fail += 1
+    await update.message.reply_text(f"ارسال شد! موفق: {success} - ناموفق: {fail}")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
@@ -584,16 +631,7 @@ async def handle_faq(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # ==================== اجرا ====================
-async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_user.id != ADMIN_ID:
-        return
-    user_count = context.bot_data.get('user_count', 0)
-    form_count = context.bot_data.get('form_count', 0)
-    await update.message.reply_text(
-        f"📊 آمار ربات\n\n"
-        f"👤 تعداد کاربران: {user_count}\n"
-        f"📋 تعداد فرم‌های ارسال شده: {form_count}"
-    )
+
 def main():
     app = Application.builder().token(TOKEN).build()
 
@@ -632,6 +670,7 @@ def main():
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("stats", stats))
+    app.add_handler(CommandHandler("broadcast", broadcast))
     app.add_handler(CommandHandler("services", services_command))
     app.add_handler(form_handler)
     app.add_handler(CallbackQueryHandler(handle_faq))
